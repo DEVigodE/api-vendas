@@ -18,9 +18,11 @@ export default async function rateLimiter(
       },
     });
 
+    await redisClient.connect();
+
     const limiter = new RateLimiterRedis({
       storeClient: redisClient,
-      keyPrefix: 'ratelimits',
+      keyPrefix: 'ratelimit',
       points: 5,
       duration: 1,
     });
