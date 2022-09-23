@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { verify } from 'jsonwebtoken';
+import { Secret, verify } from 'jsonwebtoken';
 import AppError from '@shared/errors/AppError';
 import authConfig from '@config/auth';
 
@@ -24,7 +24,7 @@ export default function isAuthenticated(
 
   try {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const decodedToken = verify(token, authConfig.jwt.secret);
+    const decodedToken = verify(token, authConfig.jwt.secret as Secret);
 
     const { sub } = decodedToken as ITokenPayload;
 

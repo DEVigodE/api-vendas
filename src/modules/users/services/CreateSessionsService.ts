@@ -31,17 +31,17 @@ class CreateSessionsService {
       throw new AppError('Incorrect email/password combination.', 401);
     }
 
-    // const token = sign({}, authConfig.jwt.secret as Secret, {
-    //   subject: String(user.id),
-    //   expiresIn: authConfig.jwt.expiresIn,
-    // });
-    const token = sign(
-      {
-        data: String(user.id),
-      },
-      authConfig.jwt.secret as Secret,
-      { expiresIn: authConfig.jwt.expiresIn },
-    );
+    const token = sign({}, authConfig.jwt.secret as Secret, {
+      subject: String(user.id),
+      expiresIn: authConfig.jwt.expiresIn,
+    });
+    // const token = sign(
+    //   {
+    //     data: String(user.id),
+    //   },
+    //   authConfig.jwt.secret as Secret,
+    //   { expiresIn: authConfig.jwt.expiresIn },
+    // );
 
     return {
       user,
