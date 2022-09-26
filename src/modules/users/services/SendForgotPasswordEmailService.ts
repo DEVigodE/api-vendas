@@ -13,22 +13,23 @@ class SendForgotPasswordEmailService {
   public async execute({ email }: IRequest): Promise<void> {
     const usersRepository = getCustomRepository(UsersRepository);
     const userTokensRepository = getCustomRepository(UserTokensRepository);
-
     const user = await usersRepository.findByEmail(email);
-
     if (!user) {
       throw new AppError('User does not exists.');
     }
-
     const { token } = await userTokensRepository.generate(user.id);
-
     const forgotPasswordTemplate = path.resolve(
       __dirname,
       '..',
       'views',
       'forgot_password.hbs',
     );
+    console.log('5');
     await EtherealMail.sendMail({
+      from: {
+        email: process.env.EMAIL as string,
+        name: 'LDM Solar',
+      },
       to: {
         name: user.name,
         email: user.email,
@@ -42,6 +43,7 @@ class SendForgotPasswordEmailService {
         },
       },
     });
+    console.log('65');
   }
 }
 
