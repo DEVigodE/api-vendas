@@ -36,7 +36,7 @@ export default class EtherealMail {
     const mailTemplate = new HandlebarsMailTemplate();
 
     const transporter = nodemailer.createTransport({
-      service: 'Hotmail',
+      service: 'Gmail',
       auth: {
         user: process.env.EMAIL,
         pass: process.env.EMAIL_PASS,

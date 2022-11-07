@@ -1,30 +1,36 @@
 import AppError from '@shared/errors/AppError';
-import { getCustomRepository } from 'typeorm';
-import UsersRepository from '../typeorm/repositories/UsersRepository';
-import UserTokensRepository from '../typeorm/repositories/UserTokensRepository';
 import EtherealMail from '@config/mail/EtherealMail';
 import path from 'path';
+import { injectable, inject } from 'tsyringe';
+import { IUsersRepository } from '../domain/repositories/IUsersRepository';
+import { IUserTokensRepository } from '../domain/repositories/IUserTokensRepository';
 
 interface IRequest {
   email: string;
 }
 
+@injectable()
 class SendForgotPasswordEmailService {
+  constructor(
+    @inject('UsersRepository')
+    private usersRepository: IUsersRepository,
+
+    @inject('UserTokensRepository')
+    private userTokensRepository: IUserTokensRepository,
+  ) {}
+
   public async execute({ email }: IRequest): Promise<void> {
-    const usersRepository = getCustomRepository(UsersRepository);
-    const userTokensRepository = getCustomRepository(UserTokensRepository);
-    const user = await usersRepository.findByEmail(email);
+    const user = await this.usersRepository.findByEmail(email);
     if (!user) {
       throw new AppError('User does not exists.');
     }
-    const { token } = await userTokensRepository.generate(user.id);
+    const { token } = await this.userTokensRepository.generate(user.id);
     const forgotPasswordTemplate = path.resolve(
       __dirname,
       '..',
       'views',
       'forgot_password.hbs',
     );
-    console.log('5');
     await EtherealMail.sendMail({
       from: {
         email: process.env.EMAIL as string,
@@ -34,7 +40,7 @@ class SendForgotPasswordEmailService {
         name: user.name,
         email: user.email,
       },
-      subject: '[API Vendas] Recuperação de Senha',
+      subject: '[LDM Solar] Recuperação de Senha',
       templateData: {
         file: forgotPasswordTemplate,
         variables: {
@@ -43,7 +49,6 @@ class SendForgotPasswordEmailService {
         },
       },
     });
-    console.log('65');
   }
 }
 
